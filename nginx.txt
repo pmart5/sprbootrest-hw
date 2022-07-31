@@ -1,0 +1,41 @@
+worker_processes  auto;
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    access_log  logs/host.access.log;
+    error_log   logs/host.error.log;
+
+    sendfile        on;
+    tcp_nopush      on;
+
+    keepalive_timeout  65;
+
+    gzip  on;
+
+    upstream myservers {
+        server localhost:8080;
+    }
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            proxy_pass http://myservers;
+        }
+
+        location /signin {
+            root d:;
+            index signin.html;
+        }
+
+    }
+
+}
